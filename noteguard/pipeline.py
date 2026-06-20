@@ -21,6 +21,11 @@ class SanitiseResult:
     method: str
     audit: dict = field(default_factory=dict)
 
+    @property
+    def review_items(self) -> list[Span]:
+        """Spans flagged for human review (low-confidence detections that were still redacted)."""
+        return [s for s in self.spans if s.needs_review]
+
 
 class Pipeline:
     def __init__(self, detector: Detector | None = None, vault: PseudonymVault | None = None):
@@ -31,10 +36,12 @@ class Pipeline:
         spans = self.detector.detect(text)
         sanitised, repls = apply_transform(text, spans, method, self.vault, person_id)
         by_type = Counter(s.entity_type for s in spans)
+        needs_review = sum(1 for s in spans if s.needs_review)
         audit = {
             "detector": getattr(self.detector, "name", "?"),
             "method": method,
             "entities_removed": sum(by_type.values()),
             "by_type": dict(by_type),
+            "needs_review": needs_review,
         }
         return SanitiseResult(text, sanitised, spans, repls, method, audit)

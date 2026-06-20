@@ -36,14 +36,28 @@ class PresidioDetector:
 
     name = "presidio+rules"
 
-    # Presidio entity types we keep (already aligned to our vocabulary)
+    # Presidio entity types we keep. ORGANIZATION is included because NHS site names
+    # (e.g. "Manchester Royal Infirmary") are often tagged as ORG rather than LOCATION;
+    # excluding them was the main cause of low places recall.
     KEEP = {
         "PERSON", "DATE_TIME", "EMAIL_ADDRESS", "PHONE_NUMBER",
-        "LOCATION", "UK_NHS", "UK_NINO", "UK_PASSPORT", "UK_VEHICLE_REGISTRATION",
-        "IP_ADDRESS", "URL",
+        "LOCATION", "ORGANIZATION", "UK_NHS", "UK_NINO", "UK_PASSPORT",
+        "UK_VEHICLE_REGISTRATION", "IP_ADDRESS", "URL",
     }
 
-    def __init__(self, spacy_model: str = "en_core_web_sm", score_threshold: float = 0.4):
+    def __init__(
+        self,
+        spacy_model: str = "en_core_web_lg",
+        score_threshold: float = 0.6,
+        review_threshold: float = 0.35,
+    ):
+        """
+        spacy_model      — en_core_web_lg (default, 100% name recall) or en_core_web_sm (faster).
+        score_threshold  — spans above this are auto-confirmed and always redacted.
+        review_threshold — spans in [review_threshold, score_threshold) are flagged
+                           needs_review=True: still redacted for safety, but surfaced for
+                           human confirmation in the audit/UI (human-in-the-loop queue).
+        """
         from presidio_analyzer import AnalyzerEngine
         from presidio_analyzer.nlp_engine import NlpEngineProvider
 
@@ -53,6 +67,7 @@ class PresidioDetector:
         })
         self.engine = AnalyzerEngine(nlp_engine=provider.create_engine())
         self.score_threshold = score_threshold
+        self.review_threshold = review_threshold
         self._register_uk_recognizers()
 
     def _register_uk_recognizers(self) -> None:
@@ -85,12 +100,18 @@ class PresidioDetector:
 
     def detect(self, text: str) -> list[Span]:
         results = self.engine.analyze(text=text, language="en")
-        spans = [
-            Span(r.start, r.end, r.entity_type, text[r.start:r.end], r.score)
-            for r in results
-            if r.entity_type in self.KEEP and r.score >= self.score_threshold
-        ]
-        spans += find_rule_spans(text)
+        spans: list[Span] = []
+        for r in results:
+            if r.entity_type not in self.KEEP:
+                continue
+            if r.score >= self.score_threshold:
+                spans.append(Span(r.start, r.end, r.entity_type, text[r.start:r.end], r.score))
+            elif r.score >= self.review_threshold:
+                spans.append(
+                    Span(r.start, r.end, r.entity_type, text[r.start:r.end], r.score,
+                         needs_review=True)
+                )
+        spans += find_rule_spans(text)  # rule-based detections are always confident
         return _merge(spans)
 
 
@@ -147,11 +168,15 @@ def _merge(spans: list[Span]) -> list[Span]:
     return kept
 
 
-def build_detector(use_presidio: bool = True) -> Detector:
-    """Best available detector; falls back to rules if Presidio import fails."""
+def build_detector(use_presidio: bool = True, spacy_model: str = "en_core_web_lg") -> Detector:
+    """Best available detector; falls back to rules if Presidio import fails.
+
+    spacy_model defaults to en_core_web_lg (100% name recall in benchmarks).
+    Pass en_core_web_sm for faster startup when recall trade-off is acceptable.
+    """
     if use_presidio:
         try:
-            return PresidioDetector()
+            return PresidioDetector(spacy_model=spacy_model)
         except Exception as e:  # pragma: no cover - environment dependent
             print(f"[noteguard] Presidio unavailable ({e}); falling back to rules.")
     return RuleDetector()

@@ -34,6 +34,7 @@ class Span:
     entity_type: str
     text: str
     score: float = 1.0
+    needs_review: bool = False  # True for detections below the auto-confirm threshold
 
 
 def nhs_number_is_valid(digits: str) -> bool:
@@ -83,6 +84,13 @@ _UUID_RE = re.compile(
 _NINO_RE = re.compile(r"\b[A-Z]{2}\s?\d{2}\s?\d{2}\s?\d{2}\s?[A-Da-d]\b", re.IGNORECASE)
 # Current-format UK plate: 2 letters, 2 digits, optional space, 3 letters (e.g. AB12 CDE)
 _VEHICLE_RE = re.compile(r"\b[A-Z]{2}\d{2}\s?[A-Z]{3}\b")
+# UK NHS site names: "X Hospital / Infirmary / NHS Trust / Medical Centre / Clinic"
+# One-to-four leading title-cased words followed by a known NHS facility suffix.
+# Context-anchored to title-case to avoid flagging generic lowercase mentions.
+_SITE_RE = re.compile(
+    r"\b(?:[A-Z][A-Za-z']+\s+){1,4}"
+    r"(?:Hospital|Infirmary|NHS\s+Trust|Medical\s+Centre|Health\s+Centre|Clinic|Surgery)\b"
+)
 
 # (regex, entity_type, capture_group): group 0 = whole match, 1 = inner capture
 _PLAIN = [
@@ -113,6 +121,9 @@ def find_rule_spans(text: str) -> list[Span]:
     for regex, etype, grp in _PLAIN:
         for m in regex.finditer(text):
             spans.append(Span(m.start(grp), m.end(grp), etype, m.group(grp)))
+
+    for m in _SITE_RE.finditer(text):
+        spans.append(Span(m.start(), m.end(), LOCATION, m.group()))
 
     return _dedupe(spans)
 
