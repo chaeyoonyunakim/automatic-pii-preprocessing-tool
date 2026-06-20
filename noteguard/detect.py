@@ -35,12 +35,13 @@ class PresidioDetector:
 
     name = "presidio+rules"
 
-    # Presidio entity types we keep. ORGANIZATION is included because NHS site names
-    # (e.g. "Manchester Royal Infirmary") are often tagged as ORG rather than LOCATION;
-    # excluding them was the main cause of low places recall.
+    # Presidio entity types we keep. ORGANIZATION is deliberately EXCLUDED: spaCy lg
+    # over-tags abbreviations/labels ("NHS", "DOB …", "GMC") as ORG, which both creates
+    # false positives and swallows precise rule spans (dates, NHS numbers). NHS site
+    # names are caught instead by the _SITE_RE LOCATION rule (incl. "… Trust").
     KEEP = {
         "PERSON", "DATE_TIME", "EMAIL_ADDRESS", "PHONE_NUMBER",
-        "LOCATION", "ORGANIZATION", "UK_NHS", "UK_NINO", "UK_PASSPORT",
+        "LOCATION", "UK_NHS", "UK_NINO", "UK_PASSPORT",
         "UK_VEHICLE_REGISTRATION", "IP_ADDRESS", "URL",
     }
 
@@ -114,14 +115,27 @@ class PresidioDetector:
         return _merge(spans)
 
 
+# Precise pattern/checksum entities win over broad NER spans (PERSON/LOCATION) when
+# they overlap — e.g. a rule DATE inside a spurious NER span should survive as the date.
+_PRECISE = {
+    "UK_NHS", "DATE_TIME", "EMAIL_ADDRESS", "PHONE_NUMBER", "UK_POSTCODE",
+    "UK_NINO", "UK_VEHICLE_REGISTRATION", "UK_PASSPORT", "GMC", "NMC",
+    "NHS_ODS", "RECORD_ID",
+}
+
+
 def _merge(spans: list[Span]) -> list[Span]:
-    """Sort, then drop spans fully contained in a longer span (keep highest score)."""
-    spans = sorted(spans, key=lambda s: (s.start, -(s.end - s.start), -s.score))
+    """Return disjoint spans. On overlap, prefer precise rule entities, then the longer,
+    higher-scoring span. Disjoint output guarantees the transform can't corrupt text."""
+    def rank(s: Span):
+        return (1 if s.entity_type in _PRECISE else 0, s.end - s.start, s.score)
+
     kept: list[Span] = []
-    for s in spans:
-        if any(k.start <= s.start and s.end <= k.end for k in kept):
+    for s in sorted(spans, key=rank, reverse=True):
+        if any(s.start < k.end and k.start < s.end for k in kept):  # overlaps a kept span
             continue
         kept.append(s)
+    kept.sort(key=lambda s: s.start)
     return kept
 
 

@@ -38,12 +38,15 @@ python -m pytest tests/ -v
 ## Decisions locked in (version 1 branch)
 - **Default model: `en_core_web_lg`** — 100% name recall vs 91% for sm; clinical transformer
   (`obi/deid_roberta_i2b2`) was tested and performed worse on UK names (US i2b2 training data).
-- **ORGANIZATION added to PresidioDetector.KEEP** — hospital names are often tagged as ORG;
-  excluding them was the root cause of low places recall.
+- **ORGANIZATION excluded from PresidioDetector.KEEP** — spaCy lg over-tags labels/abbreviations
+  ("NHS", "DOB …", "GMC") as ORG, causing false positives and swallowing precise rule spans. NHS
+  site names are caught by the `_SITE_RE` LOCATION rule (incl. "… Trust") instead.
+- **`_merge` is overlap-safe + priority-ranked** — output spans are disjoint (no transform
+  corruption); on overlap, precise rule entities (date/NHS/GMC/…) beat broad NER spans.
 - **Human-in-the-loop review queue** — spans with score in `[review_threshold, score_threshold)`
   are redacted but flagged `needs_review=True` for IG analyst review before SDE pool admission.
 - **Places recall** — low recall (0–0.7) was mostly generic "ward"/"bay" in GT (now filtered by
-  `_GENERIC`) and ORG vs LOCATION mismatch (now fixed via KEEP + `_SITE_RE` in recognizers).
+  `_GENERIC`); NHS site names are caught by the `_SITE_RE` LOCATION rule in recognizers.
 
 ## Gotchas
 - Note text has mojibake (`Â·`) — `_fix_mojibake` runs before detection.

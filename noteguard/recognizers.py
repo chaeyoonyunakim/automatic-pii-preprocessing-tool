@@ -89,7 +89,7 @@ _VEHICLE_RE = re.compile(r"\b[A-Z]{2}\d{2}\s?[A-Z]{3}\b")
 # Context-anchored to title-case to avoid flagging generic lowercase mentions.
 _SITE_RE = re.compile(
     r"\b(?:[A-Z][A-Za-z']+\s+){1,4}"
-    r"(?:Hospital|Infirmary|NHS\s+Trust|Medical\s+Centre|Health\s+Centre|Clinic|Surgery)\b"
+    r"(?:Hospital|Infirmary|Trust|Medical\s+Centre|Health\s+Centre|Clinic|Surgery)\b"
 )
 
 # (regex, entity_type, capture_group): group 0 = whole match, 1 = inner capture
