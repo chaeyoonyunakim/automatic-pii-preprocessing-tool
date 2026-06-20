@@ -1,13 +1,9 @@
 ---
 title: NoteGuard — NHS De-Identification Gate
 emoji: 🛡️
-colorFrom: blue
-colorTo: indigo
 sdk: docker
 app_port: 8501
 pinned: false
-license: mit
-short_description: Sanitise-at-source PII removal for NHS notes
 ---
 
 # 🛡️ NoteGuard
@@ -86,10 +82,11 @@ src/                 the package
   evaluate.py        detection P/R/F1 + residual-leakage metric
   trust_demo.py      two-Trust sanitise-at-source demo
 tests/               unit tests + run_eval.py (the evaluation CLI)
-docs/                tool card + project docs
+docs/                tool_card.md · CHANGELOG.md
 data/                input CSVs (gitignored)
-outputs/              generated artifacts: results.json, manifests (gitignored)
-streamlit_app.py     the demo UI            pyproject.toml   packaging + lint/test config
+outputs/             generated artifacts: results.json, manifests (gitignored)
+streamlit_app.py     demo UI + Hugging Face Space entry point
+Dockerfile           HF Spaces (Docker) deploy      pyproject.toml   packaging + lint/test config
 ```
 
 ## Trust & governance — mapped to the NHS Five Safes

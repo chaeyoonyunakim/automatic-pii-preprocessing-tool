@@ -1,32 +1,12 @@
-"""Rule-layer recognisers: NHS checksum + the folded-in NHS/staff/org identifiers."""
-from src.recognisers import (
-    GMC,
-    NHS_ODS,
-    NMC,
-    RECORD_ID,
-    UK_NHS,
-    find_rule_spans,
-    nhs_number_is_valid,
-)
+"""Rule-layer recognisers: the folded-in NHS staff / org / UK identifiers.
+
+NHS-number checksum + surface forms are covered separately in test_nhs_number.py.
+"""
+from src.recognisers import GMC, NHS_ODS, NMC, RECORD_ID, find_rule_spans
 
 
 def _types(text: str) -> set[str]:
     return {s.entity_type for s in find_rule_spans(text)}
-
-
-def test_nhs_checksum_valid():
-    assert nhs_number_is_valid("943 476 5919")
-    assert nhs_number_is_valid("9434765919")
-
-
-def test_nhs_checksum_invalid():
-    assert not nhs_number_is_valid("943 476 5918")  # bad check digit
-    assert not nhs_number_is_valid("123")           # wrong length
-
-
-def test_context_anchored_9_digit_nhs():
-    # 9-digit synthetic NHS number — only catchable via the "NHS ..." context anchor
-    assert UK_NHS in _types("Patient NHS Number: 272 733 208 admitted to ward")
 
 
 def test_clinician_and_org_ids():
