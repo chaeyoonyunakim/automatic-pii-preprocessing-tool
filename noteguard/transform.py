@@ -15,7 +15,9 @@ the pure-Python guarantee holds.
 from __future__ import annotations
 
 import hashlib
+import random
 import re
+import string
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
@@ -85,6 +87,10 @@ class PseudonymVault:
             return _fake_nhs_number(value)
         if entity_type == "UK_POSTCODE":
             return _postcode_outward(value)
+        if entity_type == "UK_NINO":
+            return _fake_nino(value)
+        if entity_type == "UK_VEHICLE_REGISTRATION":
+            return _fake_vehicle(value)
         realistic = _fake(value, entity_type)
         if realistic is not None:
             return realistic
@@ -103,6 +109,24 @@ def _patient_date_offset(person_id: str, max_days: int = 365) -> int:
     """Deterministic per-patient shift in [-max_days, max_days], from person_id."""
     h = int(hashlib.sha256(f"noteguard:{person_id}".encode()).hexdigest(), 16)
     return (h % (2 * max_days + 1)) - max_days
+
+
+def _fake_nino(value: str) -> str:
+    """Format-correct fake NINO (XX999999X) — deterministic per original."""
+    rng = random.Random(_seed(value))
+    prefix = "".join(rng.choices(string.ascii_uppercase, k=2))
+    digits = "".join(str(rng.randint(0, 9)) for _ in range(6))
+    suffix = rng.choice("ABCD")
+    return f"{prefix}{digits}{suffix}"
+
+
+def _fake_vehicle(value: str) -> str:
+    """Format-correct fake UK registration plate (AB12 CDE) — deterministic per original."""
+    rng = random.Random(_seed(value))
+    area = "".join(rng.choices(string.ascii_uppercase, k=2))
+    age = "".join(str(rng.randint(0, 9)) for _ in range(2))
+    seq = "".join(rng.choices(string.ascii_uppercase, k=3))
+    return f"{area}{age} {seq}"
 
 
 def _fake_nhs_number(value: str) -> str:
