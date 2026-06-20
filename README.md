@@ -88,7 +88,7 @@ src/                 the package
 tests/               unit tests + run_eval.py (the evaluation CLI)
 docs/                tool card + project docs
 data/                input CSVs (gitignored)
-output/              generated artifacts: results.json, manifests (gitignored)
+outputs/              generated artifacts: results.json, manifests (gitignored)
 streamlit_app.py     the demo UI            pyproject.toml   packaging + lint/test config
 ```
 
@@ -113,8 +113,8 @@ pip install -e ".[app,dev]"
 python -m spacy download en_core_web_lg   # or en_core_web_sm for a faster, lighter run
 
 # 3) run
-python tests/run_eval.py --compare --limit 300   # reproduce the table -> output/results.json
-python -m src.trust_demo                          # two NHS Trusts share only de-identified data -> output/
+python tests/run_eval.py --compare --limit 300   # reproduce the table -> outputs/results.json
+python -m src.trust_demo                          # two NHS Trusts share only de-identified data -> outputs/
 streamlit run streamlit_app.py                    # demo: Try-it · Metrics · Governance · Two-Trust
 pytest -q                                          # unit tests
 ```

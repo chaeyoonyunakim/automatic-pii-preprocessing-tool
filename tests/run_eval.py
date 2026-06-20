@@ -4,7 +4,7 @@
     python tests/run_eval.py --method pseudonym     # leakage under pseudonymisation
     python tests/run_eval.py --compare              # rules-only vs presidio+rules
 
-Writes output/results.json (consumed by the Streamlit metrics panel) and prints a summary.
+Writes outputs/results.json (consumed by the Streamlit metrics panel) and prints a summary.
 This is the pipeline's evaluation entry point; it lives under tests/ alongside the unit tests.
 """
 from __future__ import annotations
@@ -23,7 +23,7 @@ from src.detect import RuleDetector, build_detector  # noqa: E402
 from src.evaluate import EvalResult, evaluate  # noqa: E402
 from src.transform import REDACTION  # noqa: E402
 
-OUTPUT_DIR = REPO / "output"
+OUTPUT_DIR = REPO / "outputs"
 logger = logging.getLogger("noteguard.eval")
 
 
@@ -49,7 +49,7 @@ def main() -> None:
     ap.add_argument("--method", default=REDACTION, choices=["redaction", "pseudonym"])
     ap.add_argument("--no-presidio", action="store_true", help="rules only")
     ap.add_argument("--compare", action="store_true", help="rules vs presidio+rules")
-    ap.add_argument("--out", default=None, help="output JSON path (default: output/results.json)")
+    ap.add_argument("--out", default=None, help="output JSON path (default: outputs/results.json)")
     args = ap.parse_args()
 
     logger.info("loading notes (limit=%s) ...", args.limit)

@@ -22,7 +22,7 @@ from .evaluate import _find_all, ground_truth_spans, value_variants
 from .pipeline import Pipeline
 from .transform import PSEUDONYM, PseudonymVault
 
-OUT_DIR = Path(__file__).resolve().parent.parent / "output"
+OUT_DIR = Path(__file__).resolve().parent.parent / "outputs"
 TRUST_NAMES = {0: "Trust A (Northgate NHS Foundation Trust)", 1: "Trust B (Riverside NHS Trust)"}
 
 

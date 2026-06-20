@@ -24,8 +24,8 @@ from src.evaluate import evaluate  # noqa: E402
 from src.pipeline import Pipeline  # noqa: E402
 from src.transform import PSEUDONYM, REDACTION, PseudonymVault  # noqa: E402
 
-OUT_DIR = REPO / "output"
-RESULTS = REPO / "output" / "results.json"
+OUT_DIR = REPO / "outputs"
+RESULTS = REPO / "outputs" / "results.json"
 
 ENTITY_COLORS = {
     "PERSON": "#ffd6e0", "UK_NHS": "#ffe9b3", "DATE_TIME": "#d4f4dd", "UK_POSTCODE": "#cfe8ff",

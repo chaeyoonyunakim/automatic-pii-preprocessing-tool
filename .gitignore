@@ -1,8 +1,8 @@
 # NHS PHI safety: raw data, generated output, and the re-identification vault NEVER leave the repo
 data/*
 !data/.gitkeep
-output/*
-!output/.gitkeep
+outputs/*
+!outputs/.gitkeep
 *.vault.json
 
 # Python / packaging

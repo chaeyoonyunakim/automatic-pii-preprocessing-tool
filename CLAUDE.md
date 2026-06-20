@@ -9,8 +9,8 @@ data leaves a Trust. Encode Club "Trusted Data & AI Infrastructure" hackathon; f
 python -m venv .venv; .\.venv\Scripts\Activate.ps1
 pip install -e ".[app,dev]"; python -m spacy download en_core_web_lg
 
-python tests/run_eval.py --compare --limit 300   # VERIFIABLE SIGNAL: rules vs presidio+rules -> output/results.json
-python -m src.trust_demo                          # two NHS Trusts share only de-identified data -> output/
+python tests/run_eval.py --compare --limit 300   # VERIFIABLE SIGNAL: rules vs presidio+rules -> outputs/results.json
+python -m src.trust_demo                          # two NHS Trusts share only de-identified data -> outputs/
 streamlit run streamlit_app.py                    # demo (Try-it / Metrics / Governance / Two-Trust)
 python -m pytest tests/ -v
 
@@ -29,7 +29,7 @@ python -m pytest tests/ -v
   WITHOUT spaCy/Presidio (the fallback path). snake_case / PascalCase.
 
 ## Data rules (treat the synthetic notes as if real NHS PHI)
-- `data/raw/`, `output/`, and any vault export are gitignored — never commit. Never paste note text
+- `data/raw/`, `outputs/`, and any vault export are gitignored — never commit. Never paste note text
   into prompts; point at file paths.
 - The note→patient join (`src/data.py` ground truth) is the EVAL-ONLY oracle. It must NEVER feed
   detection/transform — that is data leakage and invalidates the metric.
