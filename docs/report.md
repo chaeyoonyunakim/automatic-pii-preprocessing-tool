@@ -20,7 +20,7 @@
 ## Tier 2
 
 ### 1. Owner and responsibility
-- **1.1 Organisation:** Encode Vibe Coding Hackathon team — FLock Sovereign AI Challenge (fork of `NoteGuard/`).
+- **1.1 Organisation:** Encode Vibe Coding Hackathon team — FLock Sovereign AI Challenge, Public Sector & Citizen Services task (fork of `NoteGuard/`).
 - **1.2 Team:** Project contributors (see repository history / `docs/CHANGELOG.md`).
 - **1.3 Senior responsible owner:** None — prototype, not in service. An SRO would be required before deployment.
 - **1.4 External supplier involvement:** No commercial supplier. Built on open-source components

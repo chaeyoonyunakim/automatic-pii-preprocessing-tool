@@ -19,7 +19,13 @@ collaborative / federated training.
 > on-ramp** that makes the data safe to train on in the first place — the missing layer in front of an
 > NHS Secure Data Environment / the Federated Data Platform.
 
-Encode Vibe Coding Hackathon — *FLock Sovereign AI Challenge* (hosted by Encode Hub). Built on **Microsoft Presidio** + **spaCy**,
+**Challenge — Public Sector & Citizen Services.** Our answer to *how AI can improve public services
+while protecting citizen privacy and ensuring public accountability*: AI detects the PII, a human
+reviews the uncertain cases, and an audit log accounts for every removal. The NHS is the hardest,
+most sensitive beachhead; the same gate generalises to local-government social care and secure
+inter-agency collaboration.
+
+Encode Vibe Coding Hackathon — *FLock Sovereign AI Challenge*, **Public Sector & Citizen Services** task (hosted by Encode Hub). Built on **Microsoft Presidio** + **spaCy**,
 evaluated on [NHSEDataScience/synthetic_clinical_notes](https://huggingface.co/datasets/NHSEDataScience/synthetic_clinical_notes).
 
 ## What makes this more than "just Presidio"

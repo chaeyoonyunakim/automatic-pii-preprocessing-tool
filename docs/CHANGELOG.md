@@ -1,7 +1,7 @@
 # Changelog
 
 Big changes since the fork of [`NoteGuard/Automatic-PII-preprocessing-tool`](https://github.com/NoteGuard/Automatic-PII-preprocessing-tool),
-grouped by pull request / milestone (newest first). Encode Vibe Coding Hackathon — FLock Sovereign AI Challenge (hosted by Encode Hub).
+grouped by pull request / milestone (newest first). Encode Vibe Coding Hackathon — FLock Sovereign AI Challenge, Public Sector & Citizen Services task (hosted by Encode Hub).
 
 ## Live-demo polish — 2026-06-21
 Direct UI / docs changes on `main` for the public demo.
