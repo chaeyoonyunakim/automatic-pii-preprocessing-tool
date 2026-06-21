@@ -15,7 +15,7 @@ from pathlib import Path
 
 import streamlit as st
 
-REPO = Path(__file__).resolve().parent.parent
+REPO = Path(__file__).resolve().parent
 sys.path.insert(0, str(REPO))
 
 from src.data import load_notes  # noqa: E402
