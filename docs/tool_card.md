@@ -6,6 +6,22 @@
 
 ---
 
+## Specification
+
+| Field | Value |
+|---|---|
+| Description | De-identification gate that detects + removes PII from free-text NHS clinical notes |
+| Type | Hybrid pipeline — pure-Python rules + Microsoft Presidio (spaCy `en_core_web_lg` NER). **No model is trained**; pre-trained components are composed. |
+| Developer | Encode Club hackathon team (fork of `NoteGuard/`) |
+| Status / version | Prototype · v0.0.1 |
+| Repository | github.com/chaeyoonyunakim/automatic-pii-preprocessing-tool |
+
+> Documented as a **tool card**, not a model card. NoteGuard trains no model, so the NHS England
+> *model card* template's training / hyperparameter / data-split sections do not apply. A gov.uk
+> Algorithmic Transparency Recording Standard (ATRS) record is provided in [`report.md`](report.md).
+
+---
+
 ## What it does
 
 NoteGuard is a **de-identification gate** for free-text NHS clinical notes. It detects and removes patient and clinician PII *inside* a Trust before any text reaches a Secure Data Environment (SDE), federated training round, or cross-Trust sharing layer.
@@ -21,6 +37,17 @@ NoteGuard is a **de-identification gate** for free-text NHS clinical notes. It d
 | Data Wrangler / IG Analyst | Before releasing notes to research or AI teams | Cannot share raw free-text; must prove zero identifier leakage |
 | SDE Operator | At the Trust boundary ingestion point | Gate between Trust raw data and the shared pool |
 | Federated AI Platform (e.g. FLock.io) | Before each training round | Needs de-identified text; cannot inspect raw Trust data |
+
+---
+
+## Use cases out of scope
+
+- **Not** a substitute for Information Governance sign-off, a DPIA, or DARS approval — it is a
+  technical control, not a legal basis for processing.
+- **Not** validated on real Trust data, non-English notes, or scanned / handwritten documents.
+- **Not** a guarantee of zero re-identification: pseudonymised output is still personal data, and
+  residual leakage is *measured*, not assumed to be zero on unseen data.
+- **Not** for clinical decision-making, or any use of note *content* beyond de-identification.
 
 ---
 
@@ -64,6 +91,20 @@ NoteGuard is a **de-identification gate** for free-text NHS clinical notes. It d
 
 ---
 
+## Bias and fairness
+
+The `PERSON` NER (spaCy `en_core_web_lg`) is trained largely on Western / English text, so **name
+recall can be lower for names of non-English origin**. This is an equity risk: under-detection means
+those patients carry a *higher residual re-identification risk*. Honest position and mitigations:
+
+- The checksum / context rules (NHS number, DOB, postcode, GMC/NMC/ODS, NINO) are **name-agnostic**,
+  so structured identifiers are detected uniformly regardless of patient demographics.
+- The **human review queue** surfaces low-confidence name spans for IG analyst confirmation.
+- **Required before deployment:** evaluate name recall *stratified by name origin / ethnicity coding*
+  on representative Trust data and report the disparity. Not yet done — evaluation is on synthetic data.
+
+---
+
 ## Human-in-the-loop
 
 Low-confidence detections (model score below auto-confirm threshold) are:
@@ -83,7 +124,7 @@ This matches the real NHS Information Governance workflow and makes the tool's a
 | **Safe settings** | ✅ | Processing inside Trust; raw data and vault gitignored |
 | **Safe outputs** | ✅ | Only de-identified text + content-free audit logs leave |
 | **Safe people** | ⚠️ | IG analyst review queue; vault stays Trust-local; honest UK GDPR framing |
-| **Safe projects** | ⚠️ | Technical layer only; project approval (DARS) remains a Trust process |
+| **Safe projects** | ⚠️ | Technical layer only; DPIA + project approval (DARS) remain Trust processes |
 
 ---
 
@@ -93,6 +134,9 @@ This matches the real NHS Information Governance workflow and makes the tool's a
 - **Precision is a conservative lower bound**: clinician names and unlisted locations correctly detected count as false positives in the evaluation (ground truth is patient-table-only).
 - **Not clinically validated**: evaluated on the `NHSEDataScience/synthetic_clinical_notes` dataset. Real deployment requires validation on representative Trust data.
 - **Clinical transformer models** (e.g. `obi/deid_roberta_i2b2`) were tested and performed worse on UK names than `en_core_web_lg` (i2b2 training data is US-centric).
+- **Governance prerequisites for deployment:** a Data Protection Impact Assessment (DPIA), IG /
+  Caldicott sign-off, and DARS project approval are required before any real use. NoteGuard is the
+  technical control, not the approval.
 
 ---
 
