@@ -12,7 +12,7 @@
 |---|---|
 | Description | De-identification gate that detects + removes PII from free-text NHS clinical notes |
 | Type | Hybrid pipeline — pure-Python rules + Microsoft Presidio (spaCy `en_core_web_lg` NER). **No model is trained**; pre-trained components are composed. |
-| Developer | Encode Club hackathon team (fork of `NoteGuard/`) |
+| Developer | Encode Vibe Coding Hackathon team (fork of `NoteGuard/`) |
 | Status / version | Prototype · v0.0.1 |
 | Repository | github.com/chaeyoonyunakim/automatic-pii-preprocessing-tool |
 
@@ -36,7 +36,7 @@ NoteGuard is a **de-identification gate** for free-text NHS clinical notes. It d
 |---|---|---|
 | Data Wrangler / IG Analyst | Before releasing notes to research or AI teams | Cannot share raw free-text; must prove zero identifier leakage |
 | SDE Operator | At the Trust boundary ingestion point | Gate between Trust raw data and the shared pool |
-| Federated AI Platform (e.g. FLock.io) | Before each training round | Needs de-identified text; cannot inspect raw Trust data |
+| Federated AI platform | Before each training round | Needs de-identified text; cannot inspect raw Trust data |
 
 ---
 
@@ -151,11 +151,11 @@ NHS Trust (raw notes)
     │
     ▼  NHS SDE / FDP shared pool
     │
-    ▼  Federated AI  (e.g. FLock.io)
+    ▼  Federated AI
 ```
 
 Same privacy model as OpenSAFELY: *code comes to the data, data never leaves*.
 
 ---
 
-*NoteGuard · Encode Club "Trusted Data & AI Infrastructure" hackathon · internal use only*
+*NoteGuard · Encode Vibe Coding Hackathon — FLock Sovereign AI Challenge · internal use only*

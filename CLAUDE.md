@@ -1,7 +1,7 @@
 # NoteGuard — NHS Clinical-Note PII Sanitisation
 
 Sanitise-at-source: detect + de-identify PII in free-text NHS clinical notes so only de-identified
-data leaves a Trust. Encode Club "Trusted Data & AI Infrastructure" hackathon; fork of `NoteGuard/`.
+data leaves a Trust. Encode Vibe Coding Hackathon — FLock Sovereign AI Challenge (Encode Hub); fork of `NoteGuard/`.
 
 ## Commands
 ```bash

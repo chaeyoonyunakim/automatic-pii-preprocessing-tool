@@ -1,7 +1,18 @@
 # Changelog
 
 Big changes since the fork of [`NoteGuard/Automatic-PII-preprocessing-tool`](https://github.com/NoteGuard/Automatic-PII-preprocessing-tool),
-grouped by pull request / milestone (newest first). Encode Club "Trusted Data & AI Infrastructure" hackathon.
+grouped by pull request / milestone (newest first). Encode Vibe Coding Hackathon — FLock Sovereign AI Challenge (hosted by Encode Hub).
+
+## Live-demo polish — 2026-06-21
+Direct UI / docs changes on `main` for the public demo.
+- **Download de-identified output** from the Try-it tab: a single sanitised note *or* the full
+  sanitised dataset, as JSON or CSV — only the de-identified text is exported (raw PHI never leaves).
+- Removed FLock.io as a technical reference throughout (UI + docs); kept only the hackathon credit.
+- Added a hackathon footer to every tab.
+- Simplified the UI copy: dropped model / algorithm names and file / command references; renamed the
+  "Metrics & Leakage" tab; 1-based note index; 50 sample notes in the browser.
+- Fixed the Streamlit `outputs/` path after the app moved to the repo root (the Metrics and Two-Trust
+  "Run" buttons read / wrote the wrong location).
 
 ## [0.0.1] — 2026-06-20 — first release (Gold-RAP restructure & Hugging Face deploy)
 Branches `dev/refactor-cleancode` + `feat/hf-spaces-demo`, merged to `main`.

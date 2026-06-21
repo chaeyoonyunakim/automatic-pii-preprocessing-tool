@@ -17,9 +17,9 @@ collaborative / federated training.
 
 > Federated learning lets institutions train without moving data. NoteGuard is the **privacy-preserving
 > on-ramp** that makes the data safe to train on in the first place — the missing layer in front of an
-> NHS Secure Data Environment / the Federated Data Platform / FLock.io.
+> NHS Secure Data Environment / the Federated Data Platform.
 
-Encode Club hackathon — *Trusted Data & AI Infrastructure*. Built on **Microsoft Presidio** + **spaCy**,
+Encode Vibe Coding Hackathon — *FLock Sovereign AI Challenge* (hosted by Encode Hub). Built on **Microsoft Presidio** + **spaCy**,
 evaluated on [NHSEDataScience/synthetic_clinical_notes](https://huggingface.co/datasets/NHSEDataScience/synthetic_clinical_notes).
 
 ## What makes this more than "just Presidio"
@@ -66,7 +66,7 @@ The rules→engine drop is the headline: it shows, with numbers, exactly what th
                  │                     patient-consistent + date-shift, vault│     (no PHI leaves)
                  └─────────────────────────────────────────────────────────┘
         same gate runs inside Trust B ──►  ┌────────────────────────────┐
-                                           │  shared de-identified pool  │ ──► federated AI / FLock.io
+                                           │  shared de-identified pool  │ ──► federated AI training
                                            └────────────────────────────┘
 ```
 

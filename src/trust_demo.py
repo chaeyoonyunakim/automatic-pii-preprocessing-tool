@@ -4,7 +4,7 @@ Each Trust holds its own patients and its own re-identification vault. It
 sanitises its notes LOCALLY and contributes only the
 de-identified text + a content-free audit manifest to a shared pool. Raw notes and
 vaults never leave the Trust. This is the sanitise-at-source gate that sits in
-front of a federated SDE / FLock.io training round.
+front of a federated SDE training round.
 
     python -m src.trust_demo                 # pseudonymise, 300 notes
     python -m src.trust_demo redaction 600

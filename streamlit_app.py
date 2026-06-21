@@ -13,6 +13,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 REPO = Path(__file__).resolve().parent
@@ -105,13 +106,13 @@ with tab_try:
         if source == "Sample note" and NOTES:
             idx = st.number_input("Note index", 1, len(NOTES), 1, step=1)
             rec = NOTES[int(idx) - 1]
-            text, person_id = rec.text, rec.person_id
+            text, person_id, note_id = rec.text, rec.person_id, rec.note_id
         else:
             text = st.text_area("Clinical note (messy free-text)", height=200,
                                 value="Pt John Smith, NHS no 943 476 5919, DOB 02/03/1981, lives SW1A 1AA. "
                                       "Admitted Manchester Royal Infirmary Ward 9. "
                                       "Reviewed by Dr Lee, GMC 1234567.")
-            person_id = "demo"
+            person_id, note_id = "demo", "pasted"
 
     if text.strip():
         result = Pipeline(detector, PseudonymVault()).sanitise(text, method, person_id)
@@ -147,6 +148,40 @@ with tab_try:
                 )
         else:
             st.success("All detections auto-confirmed (score ≥ threshold). No human review needed.", icon="✅")
+
+        st.markdown("##### 4) Download this de-identified note")
+        one = [{"note_id": note_id, "method": method, "sanitised_text": result.sanitised}]
+        d1, d2 = st.columns(2)
+        d1.download_button("⬇ Download JSON", json.dumps(one, ensure_ascii=False, indent=2),
+                           file_name="noteguard_note.json", mime="application/json",
+                           use_container_width=True)
+        d2.download_button("⬇ Download CSV", pd.DataFrame(one).to_csv(index=False),
+                           file_name="noteguard_note.csv", mime="text/csv",
+                           use_container_width=True)
+
+    st.divider()
+    with st.expander("⬇ Download the full de-identified dataset"):
+        st.caption("De-identify a batch of notes and export **only the sanitised text** — "
+                   "the original PHI never leaves the gate.")
+        ca, cb = st.columns([3, 1])
+        n_all = ca.slider("Notes to de-identify", 50, 1600, 200, step=50, key="dataset_n")
+        if cb.button("Prepare", use_container_width=True):
+            with st.spinner(f"De-identifying {n_all} notes…"):
+                pipe = Pipeline(detector, PseudonymVault())  # one vault → patient-consistent
+                rows = [{"note_id": r.note_id, "method": method,
+                         "sanitised_text": pipe.sanitise(r.text, method, r.person_id).sanitised}
+                        for r in load_notes(limit=n_all) if r.text]
+                st.session_state["dataset_rows"] = rows
+        rows = st.session_state.get("dataset_rows")
+        if rows:
+            st.success(f"{len(rows)} notes de-identified — ready to download.")
+            e1, e2 = st.columns(2)
+            e1.download_button("⬇ Download JSON", json.dumps(rows, ensure_ascii=False, indent=2),
+                               file_name="noteguard_dataset.json", mime="application/json",
+                               use_container_width=True)
+            e2.download_button("⬇ Download CSV", pd.DataFrame(rows).to_csv(index=False),
+                               file_name="noteguard_dataset.csv", mime="text/csv",
+                               use_container_width=True)
 
 # ---------------------------------------------------------------- Metrics
 with tab_metrics:
@@ -248,7 +283,7 @@ NHS Trust (raw notes)
     ▼  NHS Secure Data Environment / Federated Data Platform pool
     │   (same model as OpenSAFELY: code comes to data, data never leaves)
     │
-    ▼  Federated AI training  (e.g. FLock.io round)
+    ▼  Federated AI training
         each Trust trains locally; only model gradients are shared
 ```
     """)
@@ -283,6 +318,13 @@ with tab_trust:
             st.metric("De-identified notes", summary["shared_pool_size"])
             st.metric("Raw records shared", summary["raw_records_shared"])
             st.metric("Total residual leaks", summary["total_residual_leaks"])
-            st.caption("→ ready for federated AI / FLock.io")
+            st.caption("→ ready for federated AI training")
     else:
         st.info("Click **Run two-Trust demo** above.")
+
+# ---------------------------------------------------------------- Footer (all tabs)
+st.divider()
+st.caption(
+    "Live demo for the **FLock Sovereign AI Challenge** at the Encode Vibe Coding Hackathon, "
+    "hosted by Encode Hub."
+)

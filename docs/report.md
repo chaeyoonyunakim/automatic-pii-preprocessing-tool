@@ -20,7 +20,7 @@
 ## Tier 2
 
 ### 1. Owner and responsibility
-- **1.1 Organisation:** Encode Club "Trusted Data & AI Infrastructure" hackathon team (fork of `NoteGuard/`).
+- **1.1 Organisation:** Encode Vibe Coding Hackathon team — FLock Sovereign AI Challenge (fork of `NoteGuard/`).
 - **1.2 Team:** Project contributors (see repository history / `docs/CHANGELOG.md`).
 - **1.3 Senior responsible owner:** None — prototype, not in service. An SRO would be required before deployment.
 - **1.4 External supplier involvement:** No commercial supplier. Built on open-source components
@@ -110,4 +110,4 @@ false positive). Recall and leakage are the sound headline metrics.
 
 ---
 
-*NoteGuard · Encode Club "Trusted Data & AI Infrastructure" hackathon · prototype · v0.0.1*
+*NoteGuard · Encode Vibe Coding Hackathon — FLock Sovereign AI Challenge · prototype · v0.0.1*
