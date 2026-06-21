@@ -81,12 +81,7 @@ def load_json(path: Path):
 
 
 st.title("🛡️ NoteGuard — NHS De-Identification Gate")
-st.caption(
-    "**Sanitise at source.** Patient and clinician PII is removed *inside* each NHS Trust "
-    "before any text reaches a Secure Data Environment or federated training round — "
-    "so Trusts can collaborate without sharing raw PHI. "
-    "AI detects, humans review, audit logs account."
-)
+st.caption("AI detects patient and clinician PII, humans review, audit logs account.")
 
 detector, NOTES = load_engine()
 
